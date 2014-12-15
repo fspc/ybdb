@@ -11,7 +11,7 @@ RUN apt-get update && apt-get -y install apache2-mpm-prefork php5 php5-mysql;
 RUN cd /var/www/html/; \
 	rm index.html; \
 	git clone -b devel https://github.com/fspc/Yellow-Bike-Database.git .; \
-	rm YBDB.php 
+
 COPY YBDB.php /var/www/html/Connections/
 RUN service mysql start; \ 
 	mysqladmin create ybdb; \
