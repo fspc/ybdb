@@ -75,7 +75,7 @@ INSERT INTO contacts (
 -- Recordset1 logic:
 -- description_with_locations
 -- if show_soldto_location & community_bike is set it "did" prevent 
--- the description from showing in the list, however 
+-- the description from showing in the list (behavior altered), however 
 -- "Quantity Bikes: sold_to" shows, but not description
 -- this behavior is changed when community_bike is off in which case
 -- "location_name Donation" is shown assuming there is a location_name
@@ -84,8 +84,16 @@ INSERT INTO contacts (
 -- transaction_log to show current shop users, 
 -- but it is commented out in the code
 -- show_soldto and show_soldby don't do anything 
--- obviosly this was setup to keep track of donations and locations .. but 
--- there are better ways of doing it
+-- obviously this was setup to keep track of donations and locations by YBP  
+--
+-- Transaction Types to add to make Metrics work properly:
+--  "Metrics - Completed Mechanic Operation Bike" (quantity must be 1)
+--  "Metrics - Completed Mechanic Operation Wheel" 
+--  "Metrics - New Parts on a Completed Bike"
+--  "Sale - Used Parts"
+--  "Sale - New Parts"
+--  "Sale - Complete Bikes"
+--  Note:  "Sale - Used Parts" is the default select value
  
 DELETE FROM transaction_types;
 INSERT INTO transaction_types 
@@ -108,7 +116,13 @@ INSERT INTO transaction_types
   ("DIY Repairs", 11, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
   ("Accounts Receivable Invoice", 12, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
   ("Accounts Receivable Payment", 13, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("Deposit", 14, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group");
+  ("Deposit", 14, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
+  ("Metrics - Completed Mechanic Operation Bike", 15, 1, 0, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
+  ("Metrics - Completed Mechanic Operation Wheel", 16, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
+  ("Metrics - New Parts on a Completed Bike", 17, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
+  ("Sale - Used Parts", 18, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
+  ("Sale - New Parts", 19, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
+  ("Sale - Complete Bike", 20, 1, 0, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group");
 
 -- transaction_log - add paid or not
 -- transaction_id, date_startstorage, date,transaction_type, amount,
