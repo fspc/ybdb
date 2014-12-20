@@ -17,7 +17,8 @@ INSERT INTO shop_types (shop_type_id, list_order) VALUES
   ("Bike Education", 4), 
   ("Volunteer Only", 2), 
   ("Meeting", 3 ),
-  ("Mechanic Operation Shop", 5);
+  ("Mechanic Operation Shop", 5),
+  ("Volunteer Run Shop", 6);
 
 -- Add shop user roles to shop_user_roles
 -- sales == 1 if you want a role to be able to do sales
