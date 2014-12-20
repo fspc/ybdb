@@ -13,12 +13,12 @@ RUN cd /var/www/html/; \
 	git clone -b devel https://github.com/fspc/Yellow-Bike-Database.git .
 
 COPY YBDB.php /var/www/html/Connections/
-COPY populate.sql /var/www/html/
+COPY populate.sql /var/www/html/sql/
 RUN service mysql start; \ 
 	mysqladmin create ybdb; \
 	mysql -e "GRANT ALL PRIVILEGES ON ybdb.* TO 'admin'@'%' IDENTIFIED BY 'yblcatx' with grant option"; \
-	mysql ybdb < /var/www/html/MySQL_Structure.sql; \
-	mysql ybdb < /var/www/html/populate.sql;	
+	mysql ybdb < /var/www/html/sql/MySQL_Structure.sql; \
+	mysql ybdb < /var/www/html/sql/populate.sql;	
 
 COPY  mysql.conf /etc/supervisor/conf.d/
 COPY  apache2.conf /etc/supervisor/conf.d/
