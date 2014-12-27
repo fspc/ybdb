@@ -1,4 +1,5 @@
 -- This is probably the first documentation ever created for this project!
+-- (adjusted while developing, usually at the docker instance - https://github.com/fspc/ybdb )
 
 -- Add shop_locations and shop_types
 
@@ -9,7 +10,8 @@ INSERT INTO shop_locations (shop_location_id, date_established, active) VALUES
   ("Third Hand", "2003-01-01", 1), 
   ("Austin Yellow Bike Project", "1997-01-01", 1);
 
--- Mechanic Operation Shop is a special type of shop for shop_log.php
+-- Mechanic Operation Shop & Volunteer Run Shop are both special types of shops for shop_log.php
+-- The are hardwired in MySQL Views and are used for METRIC Statistics
 
 DELETE FROM shop_types;
 INSERT INTO shop_types (shop_type_id, list_order) VALUES 
@@ -18,15 +20,16 @@ INSERT INTO shop_types (shop_type_id, list_order) VALUES
   ("Volunteer Only", 2), 
   ("Meeting", 3 ),
   ("Mechanic Operation Shop", 5),
-  ("Volunteer Run Shop", 6);
+  ("Volunteer Run Shop", 6),
+  ("Other", 7);
 
 -- Add shop user roles to shop_user_roles
 -- sales == 1 if you want a role to be able to do sales
 -- volunteer == 1 if you want to keep track of volunteer hours
--- paid == 1 if you want staff/employee and stats
+-- paid == 1 if you want to track staff/employee and stats
 --
--- list_shop_user_roles(form name, select default) .. this function determines
--- where item in pulldown list will be the default which currently is "Personal"
+-- default select value for shop user may be set in Connections/database_functions.php,
+-- a shop_type_id with the same name needs to exist in order for this to work.
 
 DELETE FROM shop_user_roles;
 INSERT INTO shop_user_roles (
@@ -35,7 +38,8 @@ INSERT INTO shop_user_roles (
   ("Coordinator",0,0,1,0), 
   ("Personal",0,0,0,0), 
   ("Volunteer",0,1,0,0), 
-  ("Greeter",0,0,1,0);
+  ("Greeter",0,0,1,0),
+  ("Staff",0,0,1,1);
 
 -- Add some projects to projects
 
@@ -67,36 +71,45 @@ INSERT INTO contacts (
 
 -- Set-up transaction types
 -- This is object orienteed like :)
--- Storage period may be changed in transaction_log.php (defaults to 14)
--- fieldname_date -> the text field for the day the transaction transpires
--- fieldname_soldby -> the text field for the sales person (see shop_user_roles
--- table) who performs the sale (show_soldby)
--- community_bike -> allows a Quantity to be chosen
 --
--- Recordset1 logic:
--- description_with_locations
--- if show_soldto_location & community_bike is set it "did" prevent 
--- the description from showing in the list (behavior altered), however 
--- "Quantity Bikes: sold_to" shows, but not description
--- this behavior is changed when community_bike is off in which case
--- "location_name Donation" is shown assuming there is a location_name
+-- Storage period may be defined in Connections/database_functions.php
 --
--- when show_soldto_location is checked for .. there is an option in 
--- transaction_log to show current shop users, 
--- but it is commented out in the code
--- show_soldto and show_soldby don't do anything 
--- obviously this was setup to keep track of donations and locations by YBP  
+-- SILLY TEXT FIELDS (some presentation logic that is in the business logic, rather than kept cleanly separated from it)
+-- NOTE - (:colon is appended by default:)
 --
--- Transaction Types to add to make Metrics work properly:
+-- fieldname_date: text field for the day the transaction transpires, e.g. "Sale Date"
+-- fieldname_soldby: text field for the sales person (see shop_user_roles table) who performs the sale
+-- message_transaction_id:  text field after transaction_id .. seems pointless
+-- fieldname_soldto: text field for person being sold to, e.g. "Sold To"
+-- show_soldto_location: while not a presentation, without it, previous field is useless. (Also, see discussion about location) 
+-- fieldname_description: text field for description text area, e.g. "Description"
+--
+-- DISCUSSION ABOUT LOCATIONS in transaction_log.php 
+-- show_soldto_location is now used to show patrons. The history of this name is 
+-- that YBP was using it to keep track of donations and locations.  However, there is an
+-- option in transaction_log.php that would show current shop users that was 
+-- commented out, but never developed to work.
+-- More than 1 shop with its own accounting?  Run a different instance of YBDB.
+--
+-- USELESS or RESERVED FIELDS
+-- show_soldto and show_soldby currently do not do anything, 
+-- and not what you think they would do either :) 
+--
+-- METRICS - Transaction Types (built-in names) to add to make Metrics work properly:
+--				 MySQL Views have these built-in.
 --  "Metrics - Completed Mechanic Operation Bike" (quantity must be 1)
 --  "Metrics - Completed Mechanic Operation Wheel" 
 --  "Metrics - New Parts on a Completed Bike"
 --  "Sale - Used Parts"
 --  "Sale - New Parts"
---  "Sale - Complete Bikes"
---  Note:  "Sale - Used Parts" is the default select value
- 
-DELETE FROM transaction_types;
+--  "Sale - Complete Bike"
+--
+--  Note: good news, default select value for transaction types may be set in Connections/database_functions.php
+--
+--  Sales Tax Report - Hardwired Caveat: The same value used for accounting_group 
+-- 									           needs to be defined in Connections/database_functions.php
+--	
+
 INSERT INTO transaction_types 
   (transaction_type_id, rank, active, community_bike, show_transaction_id, 
   show_type, show_startdate, show_amount, show_description, show_soldto, 
@@ -104,28 +117,29 @@ INSERT INTO transaction_types
   fieldname_soldto, show_soldto_location, fieldname_description, 
   accounting_group
 ) VALUES 
-  ("DIY Bike", 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("Bicycles", 2, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("Non-inventory Parts", 3, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("Trade-ups/Ins", 4, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("Helmets", 5, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("Donations", 6, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("Memberships", 7, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("Inventory Parts", 8, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("Cargo Related", 9, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("Car Racks", 10, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("DIY Repairs", 11, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
-  ("Accounts Receivable Invoice", 12, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("Accounts Receivable Payment", 13, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"), 
-  ("Deposit", 14, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
-  ("Metrics - Completed Mechanic Operation Bike", 15, 1, 0, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
-  ("Metrics - Completed Mechanic Operation Wheel", 16, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
-  ("Metrics - New Parts on a Completed Bike", 17, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
-  ("Sale - Used Parts", 18, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
-  ("Sale - New Parts", 19, 1, 1, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group"),
-  ("Sale - Complete Bike", 20, 1, 0, 1, 1, 0, 1, 1, 1, 1, "fieldname_date", "fieldname_soldby"," message_transaction_id", "fieldname_soldto", 1, "fieldname_description", "accounting_group");
+  ("Build Your Own Bike", 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"), 
+  ("Bicycles", 2, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"), 
+  ("Non-inventory Parts", 3, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"), 
+  ("Trade-ups/Ins", 4, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"), 
+  ("Helmets", 5, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"), 
+  ("Donations", 6, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"), 
+  ("Memberships", 7, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"), 
+  ("Inventory Parts", 8, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"), 
+  ("Cargo Related", 9, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"), 
+  ("Car Racks", 10, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"), 
+  ("DIY Repairs", 11, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"),
+  ("Accounts Receivable Invoice", 12, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"), 
+  ("Accounts Receivable Payment", 13, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"), 
+  ("Deposit", 14, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"),
+  ("Metrics - Completed Mechanic Operation Bike", 15, 1, 0, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"),
+  ("Metrics - Completed Mechanic Operation Wheel", 16, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"),
+  ("Metrics - New Parts on a Completed Bike", 17, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"),
+  ("Sale - Used Parts", 18, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"),
+  ("Sale - New Parts", 19, 1, 1, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales"),
+  ("Sale - Complete Bike", 20, 1, 0, 1, 1, 0, 1, 1, 1, 1, "Sale Date", "Sold By"," ", "Sold To", 1, "Description", "Sales");
 
--- transaction_log - add paid or not
+-- transaction_log - added paid or not
+--  - added payment_type (cash, check or cc)
 -- transaction_id, date_startstorage, date,transaction_type, amount,
 -- description, sold_to, sold_by, quantity, shop_id, paid
 ALTER TABLE transaction_log ADD paid tinyint(1) NOT NULL DEFAULT '0';
