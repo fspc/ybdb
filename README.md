@@ -4,6 +4,8 @@
 
 Yellow Bike [Project's](http://austinyellowbike.org) Hours and Transaction [Database](http://austinyellowbike.org/about/special-projects/yellow-bike-hours-and-transaction-database/).
 
+Heavily developed [YBP Devel](https://github.com/fspc/Yellow-Bike-Database/tree/devel) is being utilized.
+
 ##Pull the repository
 
 ```
