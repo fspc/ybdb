@@ -20,7 +20,7 @@ RUN service mysql start; \
 	mysql ybdb < /var/www/html/sql/MySQL_Structure.sql; \
 	mysql ybdb < /var/www/html/sql/populate.sql;	
 
-COPY  mysql.conf /etc/supervisor/conf.d/
+##COPY  mysql.conf /etc/supervisor/conf.d/
 COPY  apache2.conf /etc/supervisor/conf.d/
 
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
