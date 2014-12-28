@@ -20,7 +20,12 @@ RUN service mysql start; \
 	mysql ybdb < /var/www/html/sql/MySQL_Structure.sql; \
 	mysql ybdb < /var/www/html/sql/populate.sql;	
 
-##COPY  mysql.conf /etc/supervisor/conf.d/
+# This solves a problem which occurs if bikebike/bikebike has not been
+# updated in a long time where mysql cannot find Table mysql.db when started
+# with mysqld_safe
+RUN mysql_install_db; 
+
+COPY  mysql.conf /etc/supervisor/conf.d/
 COPY  apache2.conf /etc/supervisor/conf.d/
 
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
