@@ -13,7 +13,7 @@ RUN cd /var/www/html/; \
 	git clone -b devel https://github.com/fspc/Yellow-Bike-Database.git .
 
 COPY YBDB.php /var/www/html/Connections/
-COPY populate.sql /var/www/html/sql/
+# COPY populate.sql /var/www/html/sql/
 RUN service mysql start; \ 
 	mysqladmin create ybdb; \
 	mysql -e "GRANT ALL PRIVILEGES ON ybdb.* TO 'admin'@'%' IDENTIFIED BY 'yblcatx' with grant option"; \
