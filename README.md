@@ -25,7 +25,7 @@ docker run -d -p 81:80 --name="ybdb" bikebike/ybdb
 
 ###Status
 
-Needs to have the database populated.
+Moving along nicely!
 
 ##How to test/develop inside the running container process 
 
