@@ -14,16 +14,17 @@ RUN cd /var/www/html/; \
 
 COPY YBDB.php /var/www/html/Connections/
 # COPY populate.sql /var/www/html/sql/
-RUN service mysql start; \ 
+
+# mysql_install_db solves a problem which occurs if bikebike/bikebike has not 
+# been updated in a long time where mysql cannot find Table mysql.db when 
+# started with mysqld_safe
+
+RUN service mysql start; \
+	mysql_install_db; \ 
 	mysqladmin create ybdb; \
 	mysql -e "GRANT ALL PRIVILEGES ON ybdb.* TO 'admin'@'%' IDENTIFIED BY 'yblcatx' with grant option"; \
 	mysql ybdb < /var/www/html/sql/MySQL_Structure.sql; \
 	mysql ybdb < /var/www/html/sql/populate.sql;	
-
-# This solves a problem which occurs if bikebike/bikebike has not been
-# updated in a long time where mysql cannot find Table mysql.db when started
-# with mysqld_safe
-RUN mysql_install_db; 
 
 COPY  mysql.conf /etc/supervisor/conf.d/
 COPY  apache2.conf /etc/supervisor/conf.d/
