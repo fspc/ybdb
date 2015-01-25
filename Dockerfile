@@ -26,6 +26,8 @@ RUN service mysql start; \
 	mysql ybdb < /var/www/html/sql/MySQL_Structure.sql; \
 	mysql ybdb < /var/www/html/sql/populate.sql;	
 
+## Will need to mkdir csv dir, change perms to www-data, and chmod 0700
+
 COPY  mysql.conf /etc/supervisor/conf.d/
 COPY  apache2.conf /etc/supervisor/conf.d/
 

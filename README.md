@@ -20,7 +20,7 @@ Publish the container's port to the host:
 
 
 ```
-docker run -d -p 81:80 --name="ybdb" bikebike/ybdb
+docker run -d -p 81:80 --name="ybdb" bikebike/ybdb:master
 ```
 
 ###Status
