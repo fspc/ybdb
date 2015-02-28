@@ -7,7 +7,7 @@
 FROM bikebike/bikebike
 MAINTAINER Jonathan Rosenbaum <gnuser@gmail.com>
 
-RUN apt-get update && apt-get -y install apache2-mpm-prefork php5 php5-mysql;
+RUN apt-get update && apt-get -y install apache2-mpm-prefork php5 php5-mysql php5-curl;
 RUN cd /var/www/html/; \
 	rm index.html; \
 	git clone -b devel https://github.com/fspc/Yellow-Bike-Database.git .
