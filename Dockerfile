@@ -2,7 +2,7 @@
 # YBDB #
 ########
 # YBP Hours and Transaction Database
-# Password is  
+# Password is 
 
 FROM bikebike/bikebike
 MAINTAINER Jonathan Rosenbaum <gnuser@gmail.com>
