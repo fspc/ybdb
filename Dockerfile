@@ -4,7 +4,7 @@
 # YBP Hours and Transaction Database
 # Password is 
 
-FROM bikebike/bikebike
+FROM bikebike/bikebike:14.04
 MAINTAINER Jonathan Rosenbaum <gnuser@gmail.com>
 
 RUN apt-get update && apt-get -y install apache2-mpm-prefork php5 php5-mysql php5-curl;
