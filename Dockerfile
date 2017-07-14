@@ -8,8 +8,10 @@ FROM bikebike/bikebike:14.04
 MAINTAINER Jonathan Rosenbaum <gnuser@gmail.com>
 
 RUN apt-get update && apt-get -y install apache2-mpm-prefork php5 php5-mysql php5-curl;
-RUN cd /var/www/html/; \
-	rm index.html; \
+
+WORKDIR /var/www/html
+
+RUN	rm index.html; \
 	git clone -b devel https://github.com/fspc/Yellow-Bike-Database.git .
 
 COPY YBDB.php /var/www/html/Connections/
@@ -26,10 +28,16 @@ RUN service mysql start; \
 	mysql ybdb < /var/www/html/sql/MySQL_Structure.sql; \
 	mysql ybdb < /var/www/html/sql/populate.sql;	
 
-## Will need to mkdir csv dir, change perms to www-data, and chmod 0700
+RUN	mkdir csv; \
+	chown www-data:www-data csv; \
+	chmod 0700 csv;
 
 COPY  mysql.conf /etc/supervisor/conf.d/
 COPY  apache2.conf /etc/supervisor/conf.d/
+
+VOLUME /var/lib/mysql /var/www/html/Connections
+
+EXPOSE 80
 
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
 
