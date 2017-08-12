@@ -14,7 +14,7 @@ WORKDIR /var/www/html
 RUN	rm index.html; \
 	git clone -b devel https://github.com/fspc/Yellow-Bike-Database.git .
 
-COPY YBDB.php /var/www/html/Connections/
+COPY local_configurations.php /var/www/html/Connections/
 # COPY populate.sql /var/www/html/sql/
 
 # mysql_install_db solves a problem which occurs if bikebike/bikebike has not 
