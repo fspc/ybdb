@@ -6,13 +6,29 @@ Yellow Bike [Project's](http://austinyellowbike.org) Hours and Transaction [Data
 
 Heavily developed [YBP Devel](https://github.com/fspc/Yellow-Bike-Database/tree/devel) is being utilized.
 
-## Pull the repository
+## How to Use
+
+The recommended way is to run `docker-compose up -d`.
+
+## Advanced environmental changes
+The docker-compose.yml file looks for a file called environment.  I enjoy using [docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion), so here is what I add:
+
+###### environment
+```
+VIRTUAL_HOST=ybdb.bikelover.org
+LETSENCRYPT_HOST=ybdb.bikelover.org
+LETSENCRYPT_EMAIL="jr@bikelover.org"
+```
+
+## Old Fashioned way
+
+If you do not want to use docker-compose, you may pull the repository:
 
 ```
 docker pull bikebike/ybdb
 ```
 
-## Run the docker container
+Then run the docker container:
 
 Publish the container's port to the host:
 
@@ -22,10 +38,6 @@ Publish the container's port to the host:
 ```
 docker run -d -p 81:80 --name="ybdb" bikebike/ybdb
 ```
-
-### Status
-
-Moving along nicely!
 
 ## How to test/develop inside the running container process 
 
