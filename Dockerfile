@@ -5,7 +5,7 @@
 # Password is 
 
 FROM bikebike/bikebike:14.04
-MAINTAINER Jonathan Rosenbaum <gnuser@gmail.com>
+MAINTAINER Jonathan Rosenbaum <bike@bikelover.org>
 
 RUN apt-get update && apt-get -y install apache2-mpm-prefork php5 php5-mysql php5-curl;
 
@@ -22,6 +22,7 @@ COPY local_configurations.php /var/www/html/Connections/
 # started with mysqld_safe
 
 RUN service mysql start; \
+	mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql; \
 	mysql_install_db; \ 
 	mysqladmin create ybdb; \
 	mysql -e "GRANT ALL PRIVILEGES ON ybdb.* TO 'admin'@'%' IDENTIFIED BY 'yblcatx' with grant option"; \
