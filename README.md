@@ -8,10 +8,10 @@ Heavily developed [YBP Devel](https://github.com/fspc/Yellow-Bike-Database/tree/
 
 ## How to Use
 
-The recommended way is to run `docker-compose up -d`.
+The recommended way is to run `docker-compose up -d`. By default, your container will be available on port 88.
 
 ## Advanced environmental changes
-The docker-compose.yml file looks for a file called environment.  I enjoy using [docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion), so here is what I add:
+The docker-compose.yml file looks for a file called environment.  I enjoy using [docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion), so here is what I add, after changing `port` in docker-compose.yml from `88:80` to `80`:
 
 ###### environment
 ```
@@ -36,7 +36,7 @@ Publish the container's port to the host:
 
 
 ```
-docker run -d -p 81:80 --name="ybdb" bikebike/ybdb
+docker run -d -p 88:80 --name="ybdb" bikebike/ybdb
 ```
 
 ## How to test/develop inside the running container process 
